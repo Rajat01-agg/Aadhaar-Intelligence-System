@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middleware/auth.ts";
-import { getDashboardFilters } from "../controllers/metadataController.ts";
+import { getDashboardOverview } from "../controllers/dashboardController.ts";
 import { wrapAsync } from "../utils/wrapAsync.ts";
 
 const router = Router();
 
 router.get(
-  "/filters",
+  "/overview",
   authenticateJWT,
-  wrapAsync(getDashboardFilters)
+  wrapAsync(getDashboardOverview)
 );
 
 export default router;
