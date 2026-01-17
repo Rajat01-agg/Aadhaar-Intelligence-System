@@ -10,6 +10,7 @@ import authRoutes from './src/routes/authRoutes.ts';
 import { authenticateJWT } from './src/middleware/auth.ts';
 import metadataRoutes from './src/routes/metadataRoutes.ts';
 import dashboardRoutes from './src/routes/dashboardRoutes.ts';
+import heatmapRoutes from './src/routes/heatmapRoutes.ts';
 
 const app = express();
 const PORT = 5000;
@@ -22,6 +23,7 @@ app.use(passport.initialize());
 app.use('/auth', authRoutes);
 app.use('/metadata', metadataRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard/heatmap', heatmapRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: '🚀 API is running!' });
