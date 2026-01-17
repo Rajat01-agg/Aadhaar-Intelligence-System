@@ -6,8 +6,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import passport from 'passport';
 import './src/config/passport.ts';
-import authRoutes from './src/routes/auth.routes.ts';
+import authRoutes from './src/routes/authRoutes.ts';
 import { authenticateJWT } from './src/middleware/auth.ts';
+import metadataRoutes from './src/routes/metadataRoutes.ts';
 
 const app = express();
 const PORT = 5000;
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 app.use('/auth', authRoutes);
+app.use('/metadata', metadataRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: '🚀 API is running!' });
