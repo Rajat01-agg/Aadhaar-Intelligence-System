@@ -1,4 +1,5 @@
 import prisma from "../config/database.ts";
+import type { Request, Response } from "express";
 
 async function globalSearch(query: string) {
     return {
@@ -35,7 +36,8 @@ async function globalSearch(query: string) {
 }
 
 
-export const searchController = async (req, res) => {
+
+export const searchController = async (req: Request, res: Response) => {
     const q = req.query.q as string;
 
     if (!q || q.length < 2) {

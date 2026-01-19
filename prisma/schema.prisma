@@ -469,3 +469,106 @@ model Alerts {
   @@index([isRead])
   @@index([isResolved])
 }
+
+
+model Report {
+  id              BigInt   @id @default(autoincrement())
+
+  // Identity
+  title           String
+  reportType      String   // dashboard, state, district, national
+  generatedBy     String   // userId / system
+
+  // Scope
+  state           String?
+  district        String?
+  year            Int
+  month           Int
+
+  // Status
+  status          String   // generated, downloaded, deleted
+  generatedAt     DateTime @default(now())
+
+  // PDF storage
+  pdfUrl          String?
+  pdfPath         String?
+  fileSize        String?
+
+  // Summary numbers (quick cards)
+  totalFindings   Int
+  criticalCount   Int
+  highCount       Int
+  mediumCount     Int
+  lowCount        Int
+
+  // Relations
+  sections        ReportSection[]
+
+  @@index([year, month])
+  @@index([state, district])
+}
+
+
+model ReportSection {
+  id            BigInt   @id @default(autoincrement())
+
+  reportId      BigInt
+  sectionType   ReportSectionType
+  title         String
+  orderIndex    Int
+
+  summaryText   String?
+
+  report        Report   @relation(fields: [reportId], references: [id])
+  items         ReportItem[]
+
+  @@index([sectionType])
+}
+
+enum ReportSectionType {
+  cover
+  executive_summary
+  anomaly_summary
+  trend_summary
+  pattern_summary
+  predictive_summary
+  recommendations
+}
+
+
+model ReportItem {
+  id              BigInt   @id @default(autoincrement())
+
+  sectionId       BigInt
+
+  // What kind of insight
+  itemType        ReportItemType
+  severity        AlertSeverity?
+
+  // Context
+  state           String?
+  district        String?
+
+  title           String
+  description     String
+
+  // Metrics snapshot
+  metricSnapshot  String?   // JSON string
+  confidence      Float?
+
+  // Recommendation
+  recommendation  String?
+
+  section         ReportSection @relation(fields: [sectionId], references: [id])
+
+  @@index([itemType])
+}
+
+enum ReportItemType {
+  anomaly
+  trend
+  pattern
+  prediction
+  accessibility_gap
+  operational_stress
+}
