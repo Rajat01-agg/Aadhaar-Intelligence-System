@@ -1,14 +1,16 @@
 // src/api/mlSync.routes.ts
 import express from 'express';
 import { triggerMLSync } from '../controllers/syncController.ts';
-import { authenticateJWT, allowedRoles } from '../middleware/auth.ts';
+import { authenticateJWT, requireMinimumRole, indiaOnlyAccess, apiRateLimiter } from '../middleware/auth.ts';
 
 const router = express.Router();
 
 router.post(
   '/',
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
-//   allowedRoles(['admin', 'analyst']),
+  requireMinimumRole("viewer"),
   triggerMLSync
 );
 

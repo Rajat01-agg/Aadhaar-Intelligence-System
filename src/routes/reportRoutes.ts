@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { reportController } from "../controllers/reportController.ts";
-import { authenticateJWT, allowedRoles } from "../middleware/auth.ts";
+import { authenticateJWT, requireMinimumRole, indiaOnlyAccess, apiRateLimiter } from "../middleware/auth.ts";
 import { wrapAsync } from "../utils/wrapAsync.ts";
 
 const router = Router();
@@ -14,8 +14,10 @@ const router = Router();
 
 router.post(
   "/generate",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
-  // allowedRoles(["admin", "officer", "analyst"]),
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.generateReport.bind(reportController))
 );
 
@@ -27,7 +29,10 @@ router.post(
  */
 router.get(
   "/stats",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.getStatistics.bind(reportController))
 );
 
@@ -39,7 +44,10 @@ router.get(
  */
 router.get(
   "/",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.listReports.bind(reportController))
 );
 
@@ -51,7 +59,10 @@ router.get(
  */
 router.get(
   "/:id/download",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.downloadReport.bind(reportController))
 );
 
@@ -63,7 +74,10 @@ router.get(
  */
 router.get(
   "/:id",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.getReport.bind(reportController))
 );
 
@@ -75,8 +89,10 @@ router.get(
  */
 router.delete(
   "/:id",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
-  // allowedRoles(["admin"]),
+  requireMinimumRole("viewer"),
   wrapAsync(reportController.deleteReport.bind(reportController))
 );
 

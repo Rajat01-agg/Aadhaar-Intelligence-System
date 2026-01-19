@@ -135,16 +135,30 @@ async function markAlertAsResolved(alertId: bigint) {
 
 
 export const markAlertAsReadController = async (req: Request, res: Response) => {
-    const id = BigInt(req.params.id as string);
-    const alert = await markAlertAsRead(id);
-
-    res.json({ success: true, data: alert });
+    try {
+        const id = BigInt(req.params.id as string);
+        const alert = await markAlertAsRead(id);
+        res.json({ success: true, data: alert });
+    } catch (error: any) {
+        if (error.code === 'P2025') {
+            res.status(404).json({ success: false, message: "Alert not found" });
+        } else {
+            throw error;
+        }
+    }
 }
 
 
 export const markAlertAsResolvedController = async (req: Request, res: Response) => {
-    const id = BigInt(req.params.id as string);
-    const alert = await markAlertAsResolved(id);
-
-    res.json({ success: true, data: alert });
+    try {
+        const id = BigInt(req.params.id as string);
+        const alert = await markAlertAsResolved(id);
+        res.json({ success: true, data: alert });
+    } catch (error: any) {
+        if (error.code === 'P2025') {
+            res.status(404).json({ success: false, message: "Alert not found" });
+        } else {
+            throw error;
+        }
+    }
 }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { authenticateJWT, indiaOnlyAccess, authRateLimiter } from '../middleware/auth.ts';
+import { authenticateJWT, indiaOnlyAccess, authRateLimiter, requireMinimumRole, apiRateLimiter } from '../middleware/auth.ts';
 import { wrapAsync } from '../utils/wrapAsync.ts';
 
 const router = Router();
@@ -32,40 +32,57 @@ router.get(
 
 
 // GET /auth/me - Get logged-in user profile
-router.get('/me', authenticateJWT, wrapAsync(async (req, res) => {
-    const user = req.user as { id: string; email: string; name?: string; role: string } | undefined;
+router.get(
+    '/me',
+    apiRateLimiter,
+    indiaOnlyAccess,
+    authenticateJWT,
+    requireMinimumRole("viewer"),
+    wrapAsync(async (req, res) => {
+        const user = req.user as { id: string; email: string; name?: string; role: string } | undefined;
 
-    if (!user) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
 
-    res.json({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-    });
-}));
+        res.json({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+        });
+    }));
 
 
 // POST /auth/logout - Stateless logout
-router.post('/logout', authenticateJWT, wrapAsync(async (req, res) => {
-    res.json({ message: 'Logged out successfully' });
-}));
+router.post(
+    '/logout',
+    apiRateLimiter,
+    indiaOnlyAccess,
+    authenticateJWT,
+    wrapAsync(async (req, res) => {
+        res.json({ message: 'Logged out successfully' });
+    }));
 
 
 // GET /auth/status - Check authentication status
-router.get('/status', authenticateJWT, wrapAsync(async (req, res) => {
-    const user = req.user as { id: string; email: string; role: string } | undefined;
+router.get(
+    '/status',
+    apiRateLimiter,
+    indiaOnlyAccess,
+    authenticateJWT,
+    requireMinimumRole("viewer"),
+    wrapAsync(async (req, res) => {
+        const user = req.user as { id: string; email: string; role: string } | undefined;
 
-    if (!user) {
-        return res.status(401).json({ authenticated: false });
-    }
+        if (!user) {
+            return res.status(401).json({ authenticated: false });
+        }
 
-    res.json({
-        authenticated: true,
-        role: user.role
-    });
-}));
+        res.json({
+            authenticated: true,
+            role: user.role
+        });
+    }));
 
 export default router;

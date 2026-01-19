@@ -63,7 +63,7 @@ export class PDFGenerator {
     border: '#e5e7eb',
     background: '#f9fafb',
     white: '#ffffff',
-  };
+  }; 
 
   private doc!: PDFKit.PDFDocument;
   private pageCount: number = 0;
@@ -623,7 +623,7 @@ export class PDFGenerator {
     this.doc.moveDown(1);
 
     // Key Metrics
-    if (finding.metrics.value1 !== undefined) {
+    if (finding.metrics.value1 != null) {
       this.doc
         .fontSize(10)
         .font('Helvetica-Bold')
@@ -633,17 +633,17 @@ export class PDFGenerator {
       this.doc.moveDown(0.3);
 
       const metrics = [];
-      if (finding.metrics.value1 !== undefined) {
+      if (finding.metrics.value1 != null) {
         metrics.push(
           `${finding.metrics.label1 || 'Value 1'}: ${finding.metrics.value1.toFixed(2)}`
         );
       }
-      if (finding.metrics.value2 !== undefined) {
+      if (finding.metrics.value2 != null) {
         metrics.push(
           `${finding.metrics.label2 || 'Value 2'}: ${finding.metrics.value2.toFixed(2)}`
         );
       }
-      if (finding.metrics.value3 !== undefined) {
+      if (finding.metrics.value3 != null) {
         metrics.push(
           `${finding.metrics.label3 || 'Value 3'}: ${finding.metrics.value3.toFixed(2)}`
         );

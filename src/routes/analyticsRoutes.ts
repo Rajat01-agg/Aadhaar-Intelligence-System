@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateJWT, allowedRoles } from "../middleware/auth.ts";
+import { authenticateJWT, requireMinimumRole, indiaOnlyAccess, apiRateLimiter } from "../middleware/auth.ts";
 import { wrapAsync } from "../utils/wrapAsync.ts";
 import { getVisualAnalytics } from "../controllers/analyticsController.ts";
 
@@ -11,9 +11,11 @@ const router = Router();
  */
 router.post(
   "/visuals",
+  apiRateLimiter,
+  indiaOnlyAccess,
   authenticateJWT,
-//   allowedRoles(["ADMIN", "CENTRAL_OFFICER"]),
+  requireMinimumRole("viewer"),
   wrapAsync(getVisualAnalytics)
 );
 
-export default router; 
+export default router;
