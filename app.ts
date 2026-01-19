@@ -5,7 +5,6 @@ dotenv.config();
   return this.toString();
 };
 
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -24,7 +23,9 @@ import reportRoutes from "./src/routes/reportRoutes.ts";
 import syncRoutes from "./src/routes/syncRoutes.ts";
 
 const app = express();
-const PORT = 5000;
+
+// Allow PORT to be set via environment variable for Nginx load balancing
+const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 app.use(cors());
@@ -43,15 +44,17 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/sync', syncRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: '🚀 API is running!' });
+  res.json({
+    message: '🚀 API is running!',
+    port: PORT,
+    processId: process.pid
+  });
 });
-
 
 app.get('/api/secure', authenticateJWT, (req, res) => {
   res.json({ message: 'This is a protected route', user: (req as any).user });
 });
 
-
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT} (PID: ${process.pid})`);
 });
